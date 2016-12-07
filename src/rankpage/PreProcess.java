@@ -44,10 +44,10 @@ public class PreProcess {
         protected void reduce(Text key, Iterable<User> users, Context context) throws IOException, InterruptedException {
             String following = "";
             for(User user : users){
-                if(!following.equals("") && !user.getFolowing().equals(new Text())){
+                if(!following.equals("") && !user.getFollowing().equals(new Text())){
                     following += ",";
                 }
-                following += user.getFolowing().toString();
+                following += user.getFollowing().toString();
             }
             if(following.equals("")) following = ",";
             result.set(new Double(1), new Text(following));

@@ -70,14 +70,14 @@ public class RankPage {
         String input = "/user/aodyra/output_iterate3";
         String output = "/user/aodyra/output_sort";
         deleteFolder(output);
-        Job job = Job.getInstance(conf, "(aodyra) sort rank");
+        Job job = Job.getInstance(conf, "(aodyra) sortrank ezpz");
         job.setJarByClass(SortPageRank.class);
         job.setMapperClass(SortPageRank.SortRankMapper.class);
         job.setReducerClass(SortPageRank.SortRankReducer.class);
-        job.setCombinerClass(SortPageRank.SortRankReducer.class);
+//        job.setCombinerClass(SortPageRank.SortRankReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(User.class);
-//        job.setNumReduceTasks(numReduce);
+        job.setNumReduceTasks(numReduce);
         FileInputFormat.addInputPath(job, new Path(input));
         FileOutputFormat.setOutputPath(job, new Path(output));
         job.waitForCompletion(true);

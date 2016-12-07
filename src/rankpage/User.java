@@ -18,21 +18,16 @@ import org.apache.hadoop.io.Writable;
  */
 public class User implements Writable, Comparable<User>{
     private DoubleWritable pageRank;
-    private Text userId;
     private Text following;
     
     public User(){
-        this.userId = new Text();
         this.pageRank = new DoubleWritable(1);
         this.following = new Text();
     }
 
-    public Text getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Text userId) {
-        this.userId = userId;
+    public User(Double pageRank, String following) {
+        this.pageRank = new DoubleWritable(pageRank);
+        this.following = new Text(following);
     }
 
     public Double getPageRank() {
@@ -43,11 +38,11 @@ public class User implements Writable, Comparable<User>{
         this.pageRank.set(pageRank);
     }
 
-    public Text getFolowing() {
+    public Text getFollowing() {
         return following;
     }
 
-    public void setFolowing(Text folowing) {
+    public void setFollowing(Text folowing) {
         this.following = following;
     }
     
@@ -55,20 +50,11 @@ public class User implements Writable, Comparable<User>{
         this.pageRank.set(pageRank);
         this.following = following;
     }
-    
-    public void set(Text userId, Double pageRank, Text following){
-        this.userId = userId;
-        this.pageRank.set(pageRank);
-        this.following = following;
-    }
-    
 
     @Override
     public int compareTo(User other) {
         return this.getPageRank().compareTo(other.getPageRank());
     }
-    
-    
     
     @Override
     public void write(DataOutput d) throws IOException {

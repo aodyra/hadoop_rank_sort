@@ -8,7 +8,6 @@ package rankpage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.StringTokenizer;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -21,21 +20,17 @@ import org.apache.hadoop.mapreduce.Reducer;
  * @author aodyra
  */
 public class SortPageRank {
-    public static List<User> sortRank = new ArrayList<User>();
-    
     public static class SortRankMapper extends Mapper<LongWritable, Text, Text, User>{
         private User result = new User();
         private Text userId = new Text();
         private Double userIdPageRank;
-        private Text following = new Text();
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             StringTokenizer token = new StringTokenizer(value.toString());
             userId.set(token.nextToken());
             userIdPageRank = new Double(token.nextToken());
-            following.set(token.nextToken());
-            result.set(userId, userIdPageRank, following);
-            context.write(new Text("-1"), result);
+            result.set(userIdPageRank, userId);
+            context.write(new Text("1"), result);
         }
         
     }
@@ -43,21 +38,24 @@ public class SortPageRank {
     public static class SortRankReducer extends Reducer<Text, User, Text, User>{
         @Override
         protected void reduce(Text key, Iterable<User> users, Context context) throws IOException, InterruptedException {
+            ArrayList<User> sortRank = new ArrayList<User>();
             for(User user : users){
+                User userTemp = new User(user.getPageRank(), user.getFollowing().toString());
                 if (sortRank.size() < 5){
-                    sortRank.add(user);
+                    sortRank.add(userTemp);
                     if(sortRank.size() == 5){
                         Collections.sort(sortRank);
                     }
                 } else {
                     if(user.compareTo(sortRank.get(0)) > 0){
-                        sortRank.set(0, user);
+                        sortRank.set(0, userTemp);
                         Collections.sort(sortRank);
                     }
                 }
             }
             for(int i = sortRank.size()-1; i >= 0 ; --i){
-                context.write(sortRank.get(i).getUserId(), sortRank.get(i));
+                User result = new User(sortRank.get(i).getPageRank(), sortRank.get(i).getFollowing().toString());
+                context.write(result.getFollowing(), result);
             }
         }
     }
